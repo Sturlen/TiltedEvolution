@@ -229,12 +229,12 @@ void GameServer::BindServerCommands()
         }
     });
 
-    m_commands.RegisterCommand<>("mods", "List all installed mods on this server", [&](Console::ArgStack&) {
+    m_commands.RegisterCommand<>("mods", "List all mods clients need to join this server", [&](Console::ArgStack&) {
         auto out = spdlog::get("ConOut");
         auto& mods = m_pWorld->ctx().at<ModsComponent>().GetServerMods();
         if (mods.size() == 0)
         {
-            out->warn("No mods installed");
+            out->warn("No mods required");
             return;
         }
 
