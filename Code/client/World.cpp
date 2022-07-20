@@ -28,6 +28,8 @@ World::World()
     , m_modSystem(m_dispatcher)
     , m_lastFrameTime{ std::chrono::high_resolution_clock::now() }
 {
+    x = 0;
+    y = 0;
      ctx().emplace<ImguiService>();
      ctx().emplace<DiscoveryService>(*this, m_dispatcher);
      ctx().emplace<OverlayService>(*this, m_transport, m_dispatcher);

@@ -278,6 +278,7 @@ void OverlayService::OnUpdate(const UpdateEvent&) noexcept
 {
     RunDebugDataUpdates();
     RunPlayerHealthUpdates();
+    RunNameplatesUpdates();
 }
 
 void OverlayService::OnConnectedEvent(const ConnectedEvent& acEvent) noexcept
@@ -487,4 +488,22 @@ void OverlayService::RunPlayerHealthUpdates() noexcept
     request.Percentage = newPercentage;
 
     m_transport.Send(request);
+}
+
+void OverlayService::RunNameplatesUpdates() noexcept
+{
+    static std::chrono::steady_clock::time_point lastSendTimePoint;
+    constexpr auto cDelayBetweenUpdates = 100ms;
+
+    const auto now = std::chrono::steady_clock::now();
+    if (now - lastSendTimePoint < cDelayBetweenUpdates)
+        return;
+
+    lastSendTimePoint = now;
+
+    auto pArguments = CefListValue::Create();
+    pArguments->SetDouble(0, m_world.x);
+    pArguments->SetDouble(1, m_world.y);
+
+    m_pOverlay->ExecuteAsync("nameplateData", pArguments);
 }

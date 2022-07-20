@@ -57,6 +57,8 @@ export class ClientService implements OnDestroy {
   /** Debug data change. */
   public debugDataChange = new BehaviorSubject(new Debug());
 
+  public nameplateChange = new Subject<[number, number]>;
+
   /** Connect player to server change. */
   public playerConnectedChange = new Subject<Player>();
 
@@ -91,6 +93,7 @@ export class ClientService implements OnDestroy {
 
   /** Used purely for debugging. */
   public debugChange = new Subject<void>();
+
 
   // The below emitters are used in the mocking service
 
@@ -144,6 +147,7 @@ export class ClientService implements OnDestroy {
       skyrimtogether.on('setVersion', this.onSetVersion.bind(this));
       skyrimtogether.on('debug', this.onDebug.bind(this)); //not needed anymore
       skyrimtogether.on('debugData', this.onUpdateDebug.bind(this));
+      skyrimtogether.on('nameplateData', this.onUpdateNameplates.bind(this));
       skyrimtogether.on('playerConnected', this.onPlayerConnected.bind(this));
       skyrimtogether.on('playerDisconnected', this.onPlayerDisconnected.bind(this));
       skyrimtogether.on('setHealth', this.onSetHealth.bind(this));
@@ -514,6 +518,17 @@ export class ClientService implements OnDestroy {
         receivedBandwidth,
       ));
     });
+  }
+
+  private onUpdateNameplates(x: number, y: number) {
+    this.messageReception.next({ name: "Nameplate", content: `X: ${x}, Y: ${y}` });
+    const el = document.querySelector("#nameplate")
+      console.log("msg", el)
+      el.setAttribute("style", `transform: translate(${x}px, ${y}px);`)
+    this.zone.run(() => {
+      
+      this.nameplateChange.next([x, y])
+    })
   }
 
   private onPlayerConnected(playerId: number, username: string, level: number, cellName: string) {

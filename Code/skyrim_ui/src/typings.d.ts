@@ -57,6 +57,8 @@ declare namespace SkyrimTogetherTypes {
     receivedBandwidth: number
   ) => void;
 
+  type OnNameplatesCallback = (x: number, y: number) => void;
+
   type UserDataSetCallback = (password: string, username: string) => void;
 
   type PlayerConnectedCallback = (playerId: number, username: string, level: number, cellName: string) => void;
@@ -138,6 +140,8 @@ interface SkyrimTogether {
   on(event: 'debug', callback: SkyrimTogetherTypes.OnDebugCallback): void;
 
   on(event: 'debugData', callback: SkyrimTogetherTypes.UpdateDebugCallback): void;
+
+  on(event: 'nameplateData', callback: SkyrimTogetherTypes.OnNameplatesCallback)
 
   /** Add listener to when the player's is connected with the launcher */
   on(event: 'userDataSet', callback: SkyrimTogetherTypes.UserDataSetCallback): void;

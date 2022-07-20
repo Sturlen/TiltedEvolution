@@ -84,6 +84,7 @@ struct OverlayService
   private:
     void RunDebugDataUpdates() noexcept;
     void RunPlayerHealthUpdates() noexcept;
+    void RunNameplatesUpdates() noexcept;
 
     CefRefPtr<OverlayApp> m_pOverlay{nullptr};
     TiltedPhoques::UniquePtr<D3D11RenderProvider> m_pProvider;

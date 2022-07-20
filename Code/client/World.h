@@ -37,6 +37,9 @@ struct World : entt::registry
         return m_dispatcher;
     }
 
+    float x;
+    float y;
+
     const ServerSettings& GetServerSettings() const noexcept { return m_serverSettings; }
     void SetServerSettings(ServerSettings aServerSettings) noexcept { m_serverSettings = aServerSettings; }
 

@@ -123,6 +123,11 @@ void DebugService::DrawComponentDebugView()
         {
             ImGui::SetNextWindowPos(screenPos);
             ImGui::Begin("Component debug");
+            ImGui::InputFloat("X", &screenPos.x);
+            ImGui::InputFloat("Y", &screenPos.y);
+
+            m_world.x = screenPos.x;
+            m_world.y = screenPos.y;
 
             if (auto serverIdRes = Utils::GetServerId(entity))
             {

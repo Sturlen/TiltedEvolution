@@ -26,6 +26,7 @@ import { ServerListComponent } from './components/server-list/server-list.compon
 import { SettingsComponent } from './components/settings/settings.component';
 import { ToggleComponent } from './components/toggle/toggle.component';
 import { WindowComponent } from './components/window/window.component';
+import { NameplateComponent } from './components/nameplate/nameplate.component';
 import { HealthDirective } from './directives/health.directive';
 import { AssetService } from './services/asset.service';
 import { ClientService } from './services/client.service';
@@ -60,6 +61,7 @@ import { TranslocoRootModule } from './transloco-root.module';
     SettingsComponent,
     ToggleComponent,
     WindowComponent,
+    NameplateComponent,
 
     HealthDirective,
   ],
