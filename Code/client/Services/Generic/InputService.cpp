@@ -102,15 +102,14 @@ bool IsDisableKey(int aKey) noexcept
     return aKey == VK_ESCAPE;
 }
 
-#if TP_SKYRIM64
+
 void SetUIActive(OverlayService& aOverlay, auto apRenderer, bool aActive)
 {
 #if defined(TP_SKYRIM)
-    TiltedPhoques::DInputHook::Get().SetEnabled(aActive);
-    aOverlay.SetActive(aActive);
-#else
-    pRenderer->SetVisible(aActive);
+    TiltedPhoques::DInputHook::Get().SetEnabled(aActive);  
 #endif
+    aOverlay.SetActive(aActive);
+    apRenderer->SetVisible(aActive);
 
     // Ensures the game is actually loaded, in case the initial event was sent too early
     aOverlay.SetVersion(BUILD_COMMIT);
@@ -122,7 +121,7 @@ void SetUIActive(OverlayService& aOverlay, auto apRenderer, bool aActive)
     while (ShowCursor(FALSE) >= 0)
         ;
 }
-#endif
+
 
 void ProcessKeyboard(uint16_t aKey, uint16_t aScanCode, cef_key_event_type_t aType, bool aE0, bool aE1)
 {
@@ -230,7 +229,6 @@ void ProcessKeyboard(uint16_t aKey, uint16_t aScanCode, cef_key_event_type_t aTy
     if (!pRenderer)
         return;
 
-#if TP_SKYRIM64
     const auto active = overlay.GetActive();
 
     spdlog::debug("ProcessKey, type: {}, key: {}, active: {}", aType, aKey, active);
@@ -239,7 +237,9 @@ void ProcessKeyboard(uint16_t aKey, uint16_t aScanCode, cef_key_event_type_t aTy
     {
         if (!overlay.GetInGame())
         {
+#if TP_SKYRIM64
             TiltedPhoques::DInputHook::Get().SetEnabled(false);
+#endif 
         }
         else if (aType == KEYEVENT_KEYUP)
         {
@@ -250,26 +250,6 @@ void ProcessKeyboard(uint16_t aKey, uint16_t aScanCode, cef_key_event_type_t aTy
     {
         pApp->InjectKey(aType, GetCefModifiers(aKey), aKey, aScanCode);
     }
-
-#else
-    const auto active = pRenderer->IsVisible();
-
-    if (aType == KEYEVENT_KEYDOWN && aKey == VK_RCONTROL)
-    {
-        pRenderer->SetVisible(!active);
-
-        if (active)
-            while (ShowCursor(FALSE) >= 0)
-                ;
-        else
-            while (ShowCursor(TRUE) <= 0)
-                ;
-    }
-    else if (active)
-    {
-        pApp->InjectKey(aType, GetCefModifiers(aKey), aKey, aScanCode);
-    }
-#endif
 }
 
 void ProcessMouseMove(uint16_t aX, uint16_t aY)
@@ -361,11 +341,8 @@ LRESULT CALLBACK InputService::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPAR
     auto &discord = World::Get().ctx().at<DiscordService>();
     discord.WndProcHandler(hwnd, uMsg, wParam, lParam);
 
-#if TP_SKYRIM64
-    const bool active = s_pOverlay->GetActive();
-#else
     const bool active = pRenderer->IsVisible();
-#endif
+
     if (active)
     {
         auto& imgui = World::Get().ctx().at<ImguiService>();
