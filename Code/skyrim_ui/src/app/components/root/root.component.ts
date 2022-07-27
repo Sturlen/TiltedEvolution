@@ -74,9 +74,6 @@ export class RootComponent implements OnInit {
         if (this.client.inGameStateChange.getValue() && state && !this.uiRepository.isViewOpen()) {
           setTimeout(() => this.chatComp.focus(), 100);
         }
-        if (!state) {
-          this.closeView();
-        }
       });
   }
 
