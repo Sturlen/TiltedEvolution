@@ -38,6 +38,20 @@ void CommandService::OnCommandEvent(const CommandEvent& acEvent) noexcept
 
         spdlog::info("Target player: '{}'", request.TargetPlayer);
     }
+    if (commandWord == "party")
+    {
+        if (m_world.GetPartyService().IsInParty())
+        {
+            SendChatMessageRequest messageRequest;
+            messageRequest.MessageType = kPartyChat;
+            messageRequest.ChatMessage = acEvent.Command.substr(commandWordPos + 1, acEvent.Command.size());
+            m_transport.Send(messageRequest);
+        }
+        else
+        {
+            m_world.GetOverlayService().SendSystemMessage("You are not in a party.");
+        }
+    }
     else
     {
         spdlog::warn("Command word does not exist: {}", commandWord);

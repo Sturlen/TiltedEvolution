@@ -46,6 +46,10 @@ void sendPlayerMessage(const ChatMessageType acType, const String acContent, Pla
         GameServer::Get()->SendToParty(notifyMessage, aSendingPlayer->GetParty());
         break;
 
+    case (kPartyChat):
+        GameServer::Get()->SendToParty(notifyMessage, aSendingPlayer->GetParty());
+        break;
+
     default:
         spdlog::error("{} is not a known MessageType", static_cast<uint64_t>(notifyMessage.MessageType));
         break;
