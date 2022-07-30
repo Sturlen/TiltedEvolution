@@ -20,6 +20,9 @@ function messageTypeToClassName(type: MessageType): string {
     
     case MessageType.PLAYER_DIALOGUE:
       return "dialogue";
+    
+    case MessageType.PARTY_CHAT:
+      return "party";
 
     default:
       return "global";
