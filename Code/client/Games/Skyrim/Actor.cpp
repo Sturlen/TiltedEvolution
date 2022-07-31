@@ -508,6 +508,13 @@ bool Actor::IsDead() noexcept
     return s_pIsDead(this);
 }
 
+/*True if actor is a summon or raised corpse*/
+bool Actor::IsCommandedActor() noexcept
+{
+    PAPYRUS_FUNCTION(bool, Actor, IsCommandedActor);
+    return s_pIsCommandedActor(this);
+}
+
 bool Actor::IsDragon() noexcept
 {
     // TODO: if anyone has a better way of doing this, please do tell.
