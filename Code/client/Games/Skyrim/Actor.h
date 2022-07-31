@@ -227,6 +227,7 @@ struct Actor : TESObjectREFR
 
     bool IsDead() noexcept;
     bool IsCommandedActor() noexcept;
+    bool IsPlayerTeammate() noexcept;
     bool IsDragon() noexcept;
     void Kill() noexcept;
     void Reset() noexcept;

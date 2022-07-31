@@ -515,6 +515,12 @@ bool Actor::IsCommandedActor() noexcept
     return s_pIsCommandedActor(this);
 }
 
+bool Actor::IsPlayerTeammate() noexcept
+{
+    PAPYRUS_FUNCTION(bool, Actor, IsPlayerTeammate);
+    return s_pIsPlayerTeammate(this);
+}
+
 bool Actor::IsDragon() noexcept
 {
     // TODO: if anyone has a better way of doing this, please do tell.
