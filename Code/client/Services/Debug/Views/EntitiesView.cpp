@@ -168,6 +168,8 @@ void DebugService::DisplayFormComponent(FormIdComponent& aFormComponent) const n
     ImGui::InputFloat3("Rotation", pActor->rotation.AsArray(), "%.3f", ImGuiInputTextFlags_ReadOnly);
     int isDead = int(pActor->IsDead());
     ImGui::InputScalar("Is dead?", ImGuiDataType_U8, &isDead, 0, 0, "%" PRIx8, ImGuiInputTextFlags_ReadOnly);
+    int isCommanded = int(pActor->IsCommandedActor());
+    ImGui::InputScalar("Is commanded?", ImGuiDataType_U8, &isCommanded, 0, 0, "%" PRIx8, ImGuiInputTextFlags_ReadOnly);
     int isRemote = int(pActor->GetExtension()->IsRemote());
     ImGui::InputScalar("Is remote?", ImGuiDataType_U8, &isRemote, 0, 0, "%" PRIx8, ImGuiInputTextFlags_ReadOnly);
 #if TP_SKYRIM64
