@@ -265,15 +265,7 @@ void PartyService::OnPartyAcceptInvite(const PacketEvent<PartyAcceptInviteReques
             return;
         }
 
-        if (selfPartyComponent.JoinedPartyId) // Remove from party if in one already. TODO: Decide if player needs to be out of party first
-        {
-            spdlog::debug("[PartyService]: Invitee already in party, cancelling.");
-            // RemovePlayerFromParty(pSelf, false); // skip sending left event, will override with SendPartyJoinedEvent
-            return;
-        }
-
-        party.Members.push_back(pSelf);
-        selfPartyComponent.JoinedPartyId = partyId;
+        AddPlayerToParty(pSelf, partyId);
 
         spdlog::debug("[PartyService]: Added invitee to party, sending events");
         SendPartyJoinedEvent(party, pSelf);
@@ -290,6 +282,31 @@ void PartyService::OnPlayerLeave(const PlayerLeaveEvent& acEvent) noexcept
 {
     RemovePlayerFromParty(acEvent.pPlayer);
     BroadcastPlayerList(acEvent.pPlayer);
+}
+
+bool PartyService::AddPlayerToParty(Player* apPlayer, uint32_t aPartyId) noexcept
+{
+    spdlog::info("[PartyService]: Adding player to party.");
+    if (!apPlayer)
+    {
+        spdlog::error("[PartyService]: Player arg is nullptr");
+        return false;
+    }
+
+    auto& partyComponent = apPlayer->GetParty();
+
+    if (partyComponent.JoinedPartyId)
+    {
+        spdlog::error("[PartyService]: Player is already in a party");
+        return false;
+    }
+
+    auto& partyToJoin = m_parties[aPartyId];
+
+    partyToJoin.Members.push_back(apPlayer);
+    partyComponent.JoinedPartyId = aPartyId;
+
+    return true;
 }
 
 void PartyService::RemovePlayerFromParty(Player* apPlayer) noexcept
