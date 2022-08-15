@@ -105,17 +105,7 @@ void PartyService::OnPartyCreate(const PacketEvent<PartyCreateRequest>& acPacket
 
     spdlog::debug("[PartyService]: Received request to create party");
 
-    if (!inviterPartyComponent.JoinedPartyId) // Ensure not in party
-    {
-        uint32_t partyId = m_nextId++;
-        Party& party = m_parties[partyId];
-        party.Members.push_back(player);
-        party.LeaderPlayerId = player->GetId();
-        inviterPartyComponent.JoinedPartyId = partyId;
-
-        spdlog::debug("[PartyService]: Created party for {}", player->GetId());
-        SendPartyJoinedEvent(party, player);
-    }
+    CreateParty(player);
 }
 
 void PartyService::OnPartyChangeLeader(const PacketEvent<PartyChangeLeaderRequest>& acPacket) noexcept
@@ -282,6 +272,37 @@ void PartyService::OnPlayerLeave(const PlayerLeaveEvent& acEvent) noexcept
 {
     RemovePlayerFromParty(acEvent.pPlayer);
     BroadcastPlayerList(acEvent.pPlayer);
+}
+
+std::optional<uint32_t> PartyService::CreateParty(Player* apLeader) noexcept
+{
+    spdlog::info("[PartyService]: Creating new party.");
+
+    if (!apLeader)
+    {
+        spdlog::error("[PartyService]: Leader arg is nullptr");
+        return std::optional<uint32_t>();
+    }
+
+    auto leaderId = apLeader->GetId();
+    auto& partyComponent = apLeader->GetParty();
+
+    if (partyComponent.JoinedPartyId)
+    {
+        spdlog::error("[PartyService]: Player '{}' is already in a party", leaderId);
+        return std::optional<uint32_t>();
+    }
+
+    uint32_t partyId = m_nextId++;
+    Party& party = m_parties[partyId];
+    party.Members.push_back(apLeader);
+    party.LeaderPlayerId = leaderId;
+    partyComponent.JoinedPartyId = partyId;
+
+    spdlog::debug("[PartyService]: Created party for {}", leaderId);
+    SendPartyJoinedEvent(party, apLeader);
+
+    return std::optional<uint32_t>(partyId);
 }
 
 bool PartyService::AddPlayerToParty(Player* apPlayer, uint32_t aPartyId) noexcept

@@ -47,6 +47,8 @@ protected:
     void OnPartyChangeLeader(const PacketEvent<PartyChangeLeaderRequest>& acPacket) noexcept;
     void OnPartyKick(const PacketEvent<PartyKickRequest>& acPacket) noexcept;
     
+    /* Returns party id, if it could be created */
+    std::optional<uint32_t> CreateParty(Player* apLeader) noexcept;
     bool AddPlayerToParty(Player* apPlayer, uint32_t aPartyId) noexcept;
     void RemovePlayerFromParty(Player* apPlayer) noexcept;
 
