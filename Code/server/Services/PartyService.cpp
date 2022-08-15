@@ -277,7 +277,7 @@ std::optional<uint32_t> PartyService::CreateParty(Player* apLeader) noexcept
     if (!apLeader)
     {
         spdlog::error("[PartyService]: Leader arg is nullptr");
-        return std::optional<uint32_t>();
+        return {};
     }
 
     auto leaderId = apLeader->GetId();
@@ -286,7 +286,7 @@ std::optional<uint32_t> PartyService::CreateParty(Player* apLeader) noexcept
     if (partyComponent.JoinedPartyId)
     {
         spdlog::error("[PartyService]: Player '{}' is already in a party", leaderId);
-        return std::optional<uint32_t>();
+        return {};
     }
 
     uint32_t partyId = m_nextId++;
@@ -298,7 +298,7 @@ std::optional<uint32_t> PartyService::CreateParty(Player* apLeader) noexcept
     spdlog::debug("[PartyService]: Created party for {}", leaderId);
     SendPartyJoinedEvent(party, apLeader);
 
-    return std::optional<uint32_t>(partyId);
+    return partyId;
 }
 
 bool PartyService::AddPlayerToParty(Player* apPlayer, uint32_t aPartyId) noexcept
