@@ -256,10 +256,6 @@ void PartyService::OnPartyAcceptInvite(const PacketEvent<PartyAcceptInviteReques
         }
 
         AddPlayerToParty(pSelf, partyId);
-
-        spdlog::debug("[PartyService]: Added invitee to party, sending events");
-        SendPartyJoinedEvent(party, pSelf);
-        BroadcastPartyInfo(partyId);
     }
 }
 
@@ -326,6 +322,10 @@ bool PartyService::AddPlayerToParty(Player* apPlayer, uint32_t aPartyId) noexcep
 
     partyToJoin.Members.push_back(apPlayer);
     partyComponent.JoinedPartyId = aPartyId;
+
+    spdlog::info("[PartyService]: Added invitee to party, sending events");
+    SendPartyJoinedEvent(partyToJoin, apPlayer);
+    BroadcastPartyInfo(aPartyId);
 
     return true;
 }
