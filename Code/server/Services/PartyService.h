@@ -38,7 +38,7 @@ struct PartyService
 protected:
 
     void OnUpdate(const UpdateEvent& acEvent) noexcept;
-    void OnPlayerJoin(const PlayerJoinEvent& acEvent) const noexcept;
+    void OnPlayerJoin(const PlayerJoinEvent& acEvent) noexcept;
     void OnPlayerLeave(const PlayerLeaveEvent& acEvent) noexcept;
     void OnPartyInvite(const PacketEvent<PartyInviteRequest>& acPacket) noexcept;
     void OnPartyAcceptInvite(const PacketEvent<PartyAcceptInviteRequest>& acPacket) noexcept;
@@ -62,6 +62,7 @@ private:
     TiltedPhoques::Map<uint32_t, Party> m_parties;
     uint32_t m_nextId{0};
     uint64_t m_nextInvitationExpire{0};
+    std::optional<uint32_t> m_main_party_id;
 
     entt::scoped_connection m_updateEvent;
     entt::scoped_connection m_playerJoinConnection;

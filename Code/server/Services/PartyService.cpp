@@ -155,7 +155,7 @@ void PartyService::OnPartyKick(const PacketEvent<PartyKickRequest>& acPacket) no
     }
 }
 
-void PartyService::OnPlayerJoin(const PlayerJoinEvent& acEvent) const noexcept
+void PartyService::OnPlayerJoin(const PlayerJoinEvent& acEvent) noexcept
 {
     BroadcastPlayerList();
 
@@ -171,6 +171,23 @@ void PartyService::OnPlayerJoin(const PlayerJoinEvent& acEvent) const noexcept
     spdlog::debug("[Party] New notify player {:x} {}", notify.PlayerId, notify.Username.c_str());
 
     GameServer::Get()->SendToPlayers(notify, acEvent.pPlayer);
+
+    if (m_main_party_id)
+    {
+        spdlog::info("[PartyService] Main Party already exists");
+
+        AddPlayerToParty(acEvent.pPlayer, m_main_party_id.value());
+    }
+    else
+    {
+        spdlog::info("[PartyService] Main Party does not exist yet");
+        auto partyId = CreateParty(acEvent.pPlayer);
+        if (partyId)
+        {
+            spdlog::info("[PartyService] Set Main Party");
+            m_main_party_id = partyId;
+        }
+    }
 }
 
 void PartyService::OnPartyInvite(const PacketEvent<PartyInviteRequest>& acPacket) noexcept
