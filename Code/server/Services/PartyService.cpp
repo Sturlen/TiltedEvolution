@@ -47,6 +47,14 @@ bool PartyService::IsPlayerInParty(Player* const apPlayer) const noexcept
     return apPlayer->GetParty().JoinedPartyId.has_value();
 }
 
+bool PartyService::InSameParty(Player* const apPlayerA, Player* const apPlayerB) const noexcept
+{
+    auto PartyIdA = apPlayerA->GetParty().JoinedPartyId;
+    auto PartyIdB = apPlayerB->GetParty().JoinedPartyId;
+
+    return PartyIdA && PartyIdB && *PartyIdA == *PartyIdA;      
+}
+
 bool PartyService::IsPlayerLeader(Player* const apPlayer) noexcept
 {
     auto& inviterPartyComponent = apPlayer->GetParty();
@@ -143,7 +151,7 @@ void PartyService::OnPartyKick(const PacketEvent<PartyKickRequest>& acPacket) no
     Player* const pKick = m_world.GetPlayerManager().GetById(message.PartyMemberPlayerId);
 
     auto& inviterPartyComponent = player->GetParty();
-    if (inviterPartyComponent.JoinedPartyId) // Ensure not in party
+    if (InSameParty(player, pKick))
     {
         Party& party = m_parties[*inviterPartyComponent.JoinedPartyId];
         if (party.LeaderPlayerId == player->GetId())
