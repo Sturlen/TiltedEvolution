@@ -146,21 +146,22 @@ void PartyService::OnPartyChangeLeader(const PacketEvent<PartyChangeLeaderReques
 
 void PartyService::OnPartyKick(const PacketEvent<PartyKickRequest>& acPacket) noexcept
 {
-    auto& message = acPacket.Packet;
-    Player* const player = acPacket.pPlayer;
-    Player* const pKick = m_world.GetPlayerManager().GetById(message.PartyMemberPlayerId);
+    Player* const requestingPlayer = acPacket.pPlayer;
+    Player* const playerToKick = m_world.GetPlayerManager().GetById(acPacket.Packet.PartyMemberPlayerId);
 
-    auto& inviterPartyComponent = player->GetParty();
-    if (InSameParty(player, pKick))
-    {
-        Party& party = m_parties[*inviterPartyComponent.JoinedPartyId];
-        if (party.LeaderPlayerId == player->GetId())
-        {
-            spdlog::debug("[PartyService]: Kicking player {} from party", pKick->GetId());
-            RemovePlayerFromParty(pKick);
-            BroadcastPlayerList(pKick);
-        }
+    if (!IsPlayerLeader(requestingPlayer) ) {
+        spdlog::error("[PartyService]: player {} attempted to kick a player without being leader", requestingPlayer->GetId());
+        return;
     }
+
+    if (!InSameParty(requestingPlayer, playerToKick))
+    {
+        spdlog::error("[PartyService]: player {} attempted to kick a player not in their party", requestingPlayer->GetId());
+        return;
+    }
+
+    spdlog::debug("[PartyService]: Kicking player {} from party", playerToKick->GetId());
+    RemovePlayerFromParty(playerToKick);
 }
 
 void PartyService::OnPlayerJoin(const PlayerJoinEvent& acEvent) noexcept
