@@ -19,6 +19,11 @@
 #include <Messages/PartyKickRequest.h>
 #include <Messages/NotifyPlayerJoined.h>
 
+namespace
+{
+Console::Setting bOnePartyPerServer{"GameServer:bOnePartyPerServer", "Force all players to be in the same party. The first to connect will be the leader", true};
+}
+
 PartyService::PartyService(World& aWorld, entt::dispatcher& aDispatcher) noexcept
     : m_world(aWorld)
     , m_updateEvent(aDispatcher.sink<UpdateEvent>().connect<&PartyService::OnUpdate>(this))
@@ -181,20 +186,23 @@ void PartyService::OnPlayerJoin(const PlayerJoinEvent& acEvent) noexcept
 
     GameServer::Get()->SendToPlayers(notify, acEvent.pPlayer);
 
-    if (m_main_party_id)
+    if (bOnePartyPerServer)
     {
-        spdlog::info("[PartyService] Main Party already exists");
-
-        AddPlayerToParty(acEvent.pPlayer, m_main_party_id.value());
-    }
-    else
-    {
-        spdlog::info("[PartyService] Main Party does not exist yet");
-        auto partyId = CreateParty(acEvent.pPlayer);
-        if (partyId)
+        if (m_main_party_id)
         {
-            spdlog::info("[PartyService] Set Main Party");
-            m_main_party_id = partyId;
+            spdlog::info("[PartyService] Main Party already exists");
+
+            AddPlayerToParty(acEvent.pPlayer, m_main_party_id.value());
+        }
+        else
+        {
+            spdlog::info("[PartyService] Main Party does not exist yet");
+            auto partyId = CreateParty(acEvent.pPlayer);
+            if (partyId)
+            {
+                spdlog::info("[PartyService] Set Main Party");
+                m_main_party_id = partyId;
+            }
         }
     }
 }
