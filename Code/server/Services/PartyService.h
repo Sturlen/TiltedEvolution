@@ -35,7 +35,6 @@ struct PartyService
     bool InSameParty(Player* const apPlayerA, Player* const apPlayerB) const noexcept;
     bool IsPlayerLeader(Player* const apPlayer) noexcept;
     Party* GetPlayerParty(Player* const apPlayer) noexcept;
-    std::optional<uint32_t> GetPlayerPartyId(Player* const apPlayer) noexcept;
 
 protected:
 
