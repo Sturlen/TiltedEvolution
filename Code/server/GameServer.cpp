@@ -291,6 +291,10 @@ void GameServer::BindServerCommands()
             out->error("Hour must be between 0-23 and minute must be between 0-59");
         }
     });
+
+    m_commands.AfterCVarSet = [&](String varname) {
+        GameServer::Get()->UpdateSettings(); spdlog::error("SET");
+    };
 }
     /* Update Info fields from user facing CVARS.*/
 void GameServer::UpdateInfo()

@@ -157,6 +157,9 @@ void ConsoleRegistry::RegisterNatives()
                 MarkDirty();
 
                 m_out->info("Set {} to {}", variableName, value);
+
+                if (AfterCVarSet)
+                    AfterCVarSet(variableName);
                 return;
             }
 

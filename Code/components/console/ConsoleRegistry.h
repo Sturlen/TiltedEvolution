@@ -97,6 +97,8 @@ class ConsoleRegistry
         m_requestFlush = true;
     }
 
+    std::function<void(TiltedPhoques::String varname)> AfterCVarSet;
+
   private:
     void AddCommand(TiltedPhoques::UniquePtr<CommandBase> apCommand);
     void AddSetting(TiltedPhoques::UniquePtr<SettingBase> apSetting);
@@ -104,7 +106,7 @@ class ConsoleRegistry
 
     ResultAnd<bool> CreateArgStack(const CommandBase* apCommand, const TiltedPhoques::String* acStringArgs,
                                    ArgStack& aStackOut);
-
+    
   private:
     std::mutex m_listLock;
     TiltedPhoques::Vector<CommandBase*> m_commands;
