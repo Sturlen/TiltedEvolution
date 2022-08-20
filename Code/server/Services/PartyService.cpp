@@ -1,6 +1,7 @@
 #include <Services/PartyService.h>
 #include <Components.h>
 #include <GameServer.h>
+#include <Party.h>
 
 #include <Events/PlayerJoinEvent.h>
 #include <Events/PlayerLeaveEvent.h>
@@ -79,16 +80,16 @@ void PartyService::OnUpdate(const UpdateEvent& acEvent) noexcept
     // Only expire once every 10 seconds
     m_nextInvitationExpire = cCurrentTick + 10000;
 
-    auto view = m_world.view<PartyComponent>();
-    for (auto entity : view)
+    for (Player* pPlayer : m_world.GetPlayerManager())
     {
-        auto& partyComponent = view.get<PartyComponent>(entity);
-        auto itor = std::begin(partyComponent.Invitations);
-        while (itor != std::end(partyComponent.Invitations))
+        auto invitations = pPlayer->GetParty().Invitations;
+
+        auto itor = std::begin(invitations);
+        while (itor != std::end(invitations))
         {
             if (itor->second < cCurrentTick)
             {
-                itor = partyComponent.Invitations.erase(itor);
+                itor = invitations.erase(itor);
             }
             else
             {

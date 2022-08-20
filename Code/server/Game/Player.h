@@ -1,6 +1,9 @@
 #pragma once
 
+#include <Party.h>
+
 struct ServerMessage;
+struct Party;
 struct Player
 {
     Player(ConnectionId_t aConnectionId);
@@ -15,7 +18,7 @@ struct Player
     [[nodiscard]] uint32_t GetId() const noexcept { return m_id; }
     [[nodiscard]] ConnectionId_t GetConnectionId() const noexcept { return m_connectionId; }
     [[nodiscard]] std::optional<entt::entity> GetCharacter() const noexcept { return m_character; }
-    [[nodiscard]] PartyComponent& GetParty() noexcept { return m_party; }
+    [[nodiscard]] Party& GetParty() noexcept { return m_party; }
     [[nodiscard]] const String& GetUsername() const noexcept { return m_username; }
     [[nodiscard]] const uint32_t GetStringCacheId() const noexcept { return m_stringCacheId; }
     [[nodiscard]] const uint16_t GetLevel() const noexcept { return m_level; }
@@ -50,7 +53,7 @@ private:
     uint64_t m_discordId{0};
     String m_endpoint;
     String m_username;
-    PartyComponent m_party;
+    Party m_party;
     QuestLogComponent m_questLog;
     CellIdComponent m_cell;
     uint32_t m_stringCacheId{0};
