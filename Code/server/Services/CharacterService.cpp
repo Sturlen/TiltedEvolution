@@ -595,8 +595,8 @@ void CharacterService::OnSyncExperienceRequest(const PacketEvent<SyncExperienceR
     NotifySyncExperience notify;
     notify.Experience = acMessage.Packet.Experience;
 
-    const auto& partyComponent = acMessage.pPlayer->GetParty();
-    GameServer::Get()->SendToParty(notify, partyComponent, acMessage.GetSender());
+    const auto& Party = acMessage.pPlayer->GetParty();
+    GameServer::Get()->SendToParty(notify, Party, acMessage.GetSender());
 }
 
 void CharacterService::OnDialogueRequest(const PacketEvent<DialogueRequest>& acMessage) const noexcept

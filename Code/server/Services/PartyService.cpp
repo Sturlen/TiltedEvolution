@@ -50,10 +50,10 @@ bool PartyService::IsPlayerInParty(Player* const apPlayer) const noexcept
 
 bool PartyService::IsPlayerLeader(Player* const apPlayer) noexcept
 {
-    auto inviterPartyComponent = apPlayer->GetParty();
-    if (inviterPartyComponent)
+    auto inviterParty = apPlayer->GetParty();
+    if (inviterParty)
     {
-        Party& party = m_parties[inviterPartyComponent->JoinedPartyId];
+        Party& party = m_parties[inviterParty->JoinedPartyId];
         return party.LeaderPlayerId == apPlayer->GetId();
     }
 
@@ -62,10 +62,10 @@ bool PartyService::IsPlayerLeader(Player* const apPlayer) noexcept
 
 Party* PartyService::GetPlayerParty(Player* const apPlayer) noexcept
 {
-    auto inviterPartyComponent = apPlayer->GetParty();
-    if (inviterPartyComponent)
+    auto inviterParty = apPlayer->GetParty();
+    if (inviterParty)
     {
-        return &m_parties[inviterPartyComponent->JoinedPartyId];
+        return &m_parties[inviterParty->JoinedPartyId];
     }
 
     return nullptr;
@@ -99,10 +99,10 @@ void PartyService::OnPartyChangeLeader(const PacketEvent<PartyChangeLeaderReques
 
     spdlog::debug("[PartyService]: Received request to change party leader to {}", message.PartyMemberPlayerId);
 
-    auto inviterPartyComponent = player->GetParty();
-    if (inviterPartyComponent)
+    auto inviterParty = player->GetParty();
+    if (inviterParty)
     {
-        Party& party = m_parties[inviterPartyComponent->JoinedPartyId];
+        Party& party = m_parties[inviterParty->JoinedPartyId];
         if (party.LeaderPlayerId == player->GetId())
         {
             for (auto& pPlayer : party.Members)
@@ -111,7 +111,7 @@ void PartyService::OnPartyChangeLeader(const PacketEvent<PartyChangeLeaderReques
                 {
                     party.LeaderPlayerId = pPlayer->GetId();
                     spdlog::debug("[PartyService]: Changed party leader to {}, updating party members.", party.LeaderPlayerId);
-                    BroadcastPartyInfo(inviterPartyComponent->JoinedPartyId);
+                    BroadcastPartyInfo(inviterParty->JoinedPartyId);
                     break;
                 }
             }
@@ -125,10 +125,10 @@ void PartyService::OnPartyKick(const PacketEvent<PartyKickRequest>& acPacket) no
     Player* const player = acPacket.pPlayer;
     Player* const pKick = m_world.GetPlayerManager().GetById(message.PartyMemberPlayerId);
 
-    auto inviterPartyComponent = player->GetParty();
-    if (inviterPartyComponent)
+    auto inviterParty = player->GetParty();
+    if (inviterParty)
     {
-        Party& party = m_parties[inviterPartyComponent->JoinedPartyId];
+        Party& party = m_parties[inviterParty->JoinedPartyId];
         if (party.LeaderPlayerId == player->GetId())
         {
             spdlog::debug("[PartyService]: Kicking player {} from party", pKick->GetId());
@@ -167,23 +167,23 @@ void PartyService::OnPartyInvite(const PacketEvent<PartyInviteRequest>& acPacket
     // If both players are available and they are different
     if (pInvitee && pInvitee != pInviter)
     {
-        auto inviterPartyComponent = pInviter->GetParty();
-        auto inviteePartyComponent = pInvitee->GetParty();
+        auto inviterParty = pInviter->GetParty();
+        auto inviteeParty = pInvitee->GetParty();
 
         spdlog::debug("[PartyService]: Got party invite from {}", pInviter->GetId());
 
-        if (!inviterPartyComponent)
+        if (!inviterParty)
         {
             spdlog::debug("[PartyService]: Inviter not in party, cancelling invite.");
             return;
         }
-        else if (inviteePartyComponent)
+        else if (inviteeParty)
         {
             spdlog::debug("[PartyService]: Invitee in party already, cancelling invite.");
             return;
         }
 
-        auto& party = m_parties[inviterPartyComponent->JoinedPartyId];
+        auto& party = m_parties[inviterParty->JoinedPartyId];
         if (party.LeaderPlayerId != pInviter->GetId())
         {
             spdlog::debug("[PartyService]: Inviter not party leader, cancelling invite.");
@@ -194,7 +194,7 @@ void PartyService::OnPartyInvite(const PacketEvent<PartyInviteRequest>& acPacket
         const auto cExpiryTick = GameServer::Get()->GetTick() + 60000;
 
         NotifyPartyInvite notification;
-        notification.InviterId = inviterPartyComponent->JoinedPartyId;
+        notification.InviterId = inviterParty->JoinedPartyId;
         notification.ExpiryTick = cExpiryTick;
 
         spdlog::debug("[PartyService]: Sending party invite to {}", pInvitee->GetId());
@@ -213,23 +213,23 @@ void PartyService::OnPartyAcceptInvite(const PacketEvent<PartyAcceptInviteReques
 
     if (pInviter && pInviter != pSelf)
     {
-        auto selfPartyComponent = pSelf->GetParty();
-        auto inviterPartyComponent = pInviter->GetParty();
+        auto selfParty = pSelf->GetParty();
+        auto inviterParty = pInviter->GetParty();
 
         spdlog::debug("[PartyService]: Invite found, processing.");
-        if (!inviterPartyComponent)
+        if (!inviterParty)
         {
             spdlog::error("[PartyService]: Inviter not in party. Cancelling.");
             return;
         }
 
-        if (selfPartyComponent)
+        if (selfParty)
         {
             spdlog::error("[PartyService]: Cannot accept invite while in a party. Cancelling.");
             return;
         }
 
-        auto partyId = inviterPartyComponent->JoinedPartyId;
+        auto partyId = inviterParty->JoinedPartyId;
 
         AddPlayerToParty(pSelf, partyId);
     }
@@ -257,9 +257,8 @@ std::optional<uint32_t> PartyService::CreateParty(Player* apLeader) noexcept
     }
 
     auto leaderId = apLeader->GetId();
-    auto partyComponent = apLeader->GetParty();
 
-    if (partyComponent)
+    if (apLeader->GetParty())
     {
         spdlog::error("[PartyService]: Player '{}' is already in a party", leaderId);
         return {};
@@ -308,12 +307,12 @@ bool PartyService::AddPlayerToParty(Player* apPlayer, uint32_t aPartyId) noexcep
 
 void PartyService::RemovePlayerFromParty(Player* apPlayer) noexcept
 {
-    auto pPartyComponent = apPlayer->GetParty();
+    auto pParty = apPlayer->GetParty();
     spdlog::debug("[PartyService]: Removing player from party.");
 
-    if (pPartyComponent)
+    if (pParty)
     {
-        auto id = pPartyComponent->JoinedPartyId;
+        auto id = pParty->JoinedPartyId;
 
         Party& party = m_parties[id];
         auto& members = party.Members;

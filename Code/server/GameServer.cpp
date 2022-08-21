@@ -495,10 +495,10 @@ void GameServer::SendToPlayersInRange(const ServerMessage& acServerMessage, cons
     }
 }
 
-void GameServer::SendToParty(const ServerMessage& acServerMessage, const Party* apPartyComponent,
+void GameServer::SendToParty(const ServerMessage& acServerMessage, const Party* apParty,
                              const Player* apExcludeSender) const
 {
-    if (!apPartyComponent)
+    if (!apParty)
     {
         spdlog::warn("Part does not exist, canceling broadcast.");
         return;
@@ -509,8 +509,8 @@ void GameServer::SendToParty(const ServerMessage& acServerMessage, const Party* 
         if (pPlayer == apExcludeSender)
             continue;
 
-        const auto partyComponent = pPlayer->GetParty();
-        if (partyComponent && partyComponent->JoinedPartyId == apPartyComponent->JoinedPartyId)
+        const auto Party = pPlayer->GetParty();
+        if (Party && Party->JoinedPartyId == apParty->JoinedPartyId)
         {
             pPlayer->Send(acServerMessage);
         }
