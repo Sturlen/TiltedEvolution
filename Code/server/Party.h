@@ -4,6 +4,7 @@ struct Party
 {
     Party() {}
 
-    std::optional<uint32_t> JoinedPartyId;
-    TiltedPhoques::Map<Player*, uint64_t> Invitations;
+    uint32_t JoinedPartyId;
+    uint32_t LeaderPlayerId;
+    Vector<Player*> Members;
 };

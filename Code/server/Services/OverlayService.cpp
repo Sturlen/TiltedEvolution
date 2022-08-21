@@ -45,7 +45,7 @@ void OverlayService::OnPlayerDialogue(const PacketEvent<PlayerDialogueRequest>& 
     notify.Name = std::regex_replace(acMessage.pPlayer->GetUsername(), escapeHtml, "");
     notify.Text = std::regex_replace(message.Text, escapeHtml, "");
 
-    auto& party = acMessage.pPlayer->GetParty();
+    auto party = acMessage.pPlayer->GetParty();
     GameServer::Get()->SendToParty(notify, party);
 }
 

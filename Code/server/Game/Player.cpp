@@ -10,6 +10,7 @@ static uint32_t GenerateId()
 Player::Player(ConnectionId_t aConnectionId)
     : m_id(GenerateId())
     , m_connectionId(aConnectionId)
+    , m_party(nullptr)
 {
     
 }
@@ -23,7 +24,7 @@ Player::Player(Player&& aRhs) noexcept
     , m_discordId{std::exchange(aRhs.m_discordId, 0)}
     , m_endpoint{std::exchange(aRhs.m_endpoint, {})}
     , m_username{std::exchange(aRhs.m_username, {})}
-    , m_party{std::exchange(aRhs.m_party, {})}
+    , m_party{std::exchange(aRhs.m_party, nullptr)}
     , m_questLog{std::exchange(aRhs.m_questLog, {})}
     , m_cell{std::exchange(aRhs.m_cell, {})}
 {

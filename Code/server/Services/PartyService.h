@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Events/PacketEvent.h>
+#include <Party.h>
 
 struct World;
 struct UpdateEvent;
@@ -19,12 +20,6 @@ struct PartyKickRequest;
 */
 struct PartyService
 {
-    struct Party
-    {
-        uint32_t LeaderPlayerId;
-        Vector<Player*> Members;
-    };
-
     PartyService(World& aWorld, entt::dispatcher& aDispatcher) noexcept;
     ~PartyService() noexcept = default;
 

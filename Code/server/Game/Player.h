@@ -18,7 +18,7 @@ struct Player
     [[nodiscard]] uint32_t GetId() const noexcept { return m_id; }
     [[nodiscard]] ConnectionId_t GetConnectionId() const noexcept { return m_connectionId; }
     [[nodiscard]] std::optional<entt::entity> GetCharacter() const noexcept { return m_character; }
-    [[nodiscard]] Party& GetParty() noexcept { return m_party; }
+    [[nodiscard]] Party* GetParty() noexcept { return m_party; }
     [[nodiscard]] const String& GetUsername() const noexcept { return m_username; }
     [[nodiscard]] const uint32_t GetStringCacheId() const noexcept { return m_stringCacheId; }
     [[nodiscard]] const uint16_t GetLevel() const noexcept { return m_level; }
@@ -40,6 +40,7 @@ struct Player
     void SetLevel(uint16_t aLevel) noexcept;
 
     void SetCellComponent(const CellIdComponent& aCellComponent) noexcept;
+    void SetParty(Party* apParty) noexcept {m_party = apParty; };
 
     void Send(const ServerMessage& acServerMessage) const;
 
@@ -53,7 +54,7 @@ private:
     uint64_t m_discordId{0};
     String m_endpoint;
     String m_username;
-    Party m_party;
+    Party* m_party;
     QuestLogComponent m_questLog;
     CellIdComponent m_cell;
     uint32_t m_stringCacheId{0};
