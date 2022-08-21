@@ -504,16 +504,10 @@ void GameServer::SendToParty(const ServerMessage& acServerMessage, const Party* 
         return;
     }
 
-    for (Player* pPlayer : m_pWorld->GetPlayerManager())
+    for (Player* pPlayer : apParty->Members)
     {
-        if (pPlayer == apExcludeSender)
-            continue;
-
-        const auto Party = pPlayer->GetParty();
-        if (Party && Party->JoinedPartyId == apParty->JoinedPartyId)
-        {
+        if (pPlayer != apExcludeSender)
             pPlayer->Send(acServerMessage);
-        }
     }
 }
 
