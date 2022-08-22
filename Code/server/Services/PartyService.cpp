@@ -49,7 +49,7 @@ bool PartyService::IsPlayerLeader(Player* const apPlayer) noexcept
     if (inviterParty)
     {
         Party& party = m_parties[inviterParty->JoinedPartyId];
-        return party.LeaderPlayerId == apPlayer->GetId();
+        return party.Leader == apPlayer;
     }
 
     return false;
@@ -104,14 +104,14 @@ void PartyService::OnPartyChangeLeader(const PacketEvent<PartyChangeLeaderReques
     if (inviterParty)
     {
         Party& party = m_parties[inviterParty->JoinedPartyId];
-        if (party.LeaderPlayerId == player->GetId())
+        if (party.Leader == player)
         {
             for (auto& pPlayer : party.Members)
             {
                 if (pPlayer->GetId() == pNewLeader->GetId())
                 {
-                    party.LeaderPlayerId = pPlayer->GetId();
-                    spdlog::debug("[PartyService]: Changed party leader to {}, updating party members.", party.LeaderPlayerId);
+                    party.Leader = pPlayer;
+                    spdlog::debug("[PartyService]: Changed party leader to {}, updating party members.", party.Leader->GetId());
                     BroadcastPartyInfo(inviterParty->JoinedPartyId);
                     break;
                 }
@@ -138,7 +138,7 @@ void PartyService::OnPartyKick(const PacketEvent<PartyKickRequest>& acPacket) no
     if (inviterParty)
     {
         Party& party = m_parties[inviterParty->JoinedPartyId];
-        if (party.LeaderPlayerId == player->GetId())
+        if (party.Leader == player)
         {
             spdlog::debug("[PartyService]: Kicking player {} from party", pKick->GetId());
             RemovePlayerFromParty(pKick);
@@ -193,7 +193,7 @@ void PartyService::OnPartyInvite(const PacketEvent<PartyInviteRequest>& acPacket
         }
 
         auto& party = m_parties[inviterParty->JoinedPartyId];
-        if (party.LeaderPlayerId != pInviter->GetId())
+        if (party.Leader != pInviter)
         {
             spdlog::debug("[PartyService]: Inviter not party leader, cancelling invite.");
             return;
@@ -277,7 +277,7 @@ std::optional<uint32_t> PartyService::CreateParty(Player* apLeader) noexcept
     Party& party = m_parties[partyId];
     party.JoinedPartyId = partyId;
     party.Members.push_back(apLeader);
-    party.LeaderPlayerId = leaderId;
+    party.Leader = apLeader;
 
     apLeader->SetParty(&party);
 
@@ -335,10 +335,10 @@ void PartyService::RemovePlayerFromParty(Player* apPlayer) noexcept
         }
         else
         {
-            if (party.LeaderPlayerId == apPlayer->GetId())
+            if (party.Leader == apPlayer)
             {
-                party.LeaderPlayerId = members.at(0)->GetId(); // Reassign party leader
-                spdlog::debug("[PartyService]: Leader left, reassigned party leader to {}", party.LeaderPlayerId);
+                party.Leader = members.at(0); // Reassign party leader
+                spdlog::debug("[PartyService]: Leader left, reassigned party leader to {}", party.Leader->GetId());
             }
             spdlog::debug("[PartyService]: Updating other party players of removal.");
             BroadcastPartyInfo(id);
@@ -386,7 +386,7 @@ void PartyService::BroadcastPartyInfo(uint32_t aPartyId) const noexcept
     auto& members = party.Members;
 
     NotifyPartyInfo message;
-    message.LeaderPlayerId = party.LeaderPlayerId;
+    message.LeaderPlayerId = party.Leader->GetId();
 
     for (auto pPlayer : members)
     {
@@ -395,7 +395,7 @@ void PartyService::BroadcastPartyInfo(uint32_t aPartyId) const noexcept
 
     for (auto pPlayer : members)
     {
-        message.IsLeader = pPlayer->GetId() == party.LeaderPlayerId;
+        message.IsLeader = pPlayer == party.Leader;
         pPlayer->Send(message);
     }
 }
@@ -403,8 +403,8 @@ void PartyService::BroadcastPartyInfo(uint32_t aPartyId) const noexcept
 void PartyService::SendPartyJoinedEvent(Party& aParty, Player* aPlayer) noexcept
 {
     NotifyPartyJoined joinedMessage;
-    joinedMessage.LeaderPlayerId = aParty.LeaderPlayerId;
-    joinedMessage.IsLeader = aParty.LeaderPlayerId == aPlayer->GetId();
+    joinedMessage.LeaderPlayerId = aParty.Leader->GetId();
+    joinedMessage.IsLeader = aParty.Leader == aPlayer;
     for (auto pPlayer : aParty.Members)
     {
         joinedMessage.PlayerIds.push_back(pPlayer->GetId());

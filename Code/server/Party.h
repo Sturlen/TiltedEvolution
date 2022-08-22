@@ -5,6 +5,6 @@ struct Party
     Party() {}
 
     uint32_t JoinedPartyId;
-    uint32_t LeaderPlayerId;
+    Player* Leader;
     Vector<Player*> Members;
 };
