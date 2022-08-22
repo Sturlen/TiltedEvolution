@@ -218,10 +218,11 @@ void CharacterService::OnAssignCharacterRequest(const PacketEvent<AssignCharacte
 
             bool isOwner = false;
 
-            if (partyService.IsPlayerInParty(acMessage.pPlayer) && partyService.IsPlayerLeader(acMessage.pPlayer)
+            auto* pParty = acMessage.pPlayer->GetParty();
+
+            if (pParty && partyService.IsPlayerLeader(acMessage.pPlayer)
                 && !characterComponent.IsMount())
             {
-                auto* pParty = partyService.GetPlayerParty(acMessage.pPlayer);
                 Player* pOwningPlayer = view.get<OwnerComponent>(*itor).GetOwner();
 
                 // Transfer ownership if owning player is in the same party as the owner

@@ -43,11 +43,6 @@ const Party* PartyService::GetById(uint32_t aId) const noexcept
     return nullptr;
 }
 
-bool PartyService::IsPlayerInParty(Player* const apPlayer) const noexcept
-{
-    return apPlayer->GetParty();
-}
-
 bool PartyService::IsPlayerLeader(Player* const apPlayer) noexcept
 {
     auto inviterParty = apPlayer->GetParty();
