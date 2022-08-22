@@ -103,13 +103,6 @@ void PartyService::OnPartyChangeLeader(const PacketEvent<PartyChangeLeaderReques
     auto inviterParty = player->GetParty();
     if (inviterParty)
     {
-        spdlog::error("[PartyService]: Player {} does not exist�. Cannot change paty leader", message.PartyMemberPlayerId);
-        return;
-    }
-
-    auto inviterParty = player->GetParty();
-    if (inviterParty)
-    {
         Party& party = m_parties[inviterParty->JoinedPartyId];
         if (party.LeaderPlayerId == player->GetId())
         {
