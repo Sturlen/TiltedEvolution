@@ -225,8 +225,10 @@ void CharacterService::OnAssignCharacterRequest(const PacketEvent<AssignCharacte
             {
                 Player* pOwningPlayer = view.get<OwnerComponent>(*itor).GetOwner();
 
+                auto* pOwningPlayerParty = pOwningPlayer->GetParty();
+
                 // Transfer ownership if owning player is in the same party as the owner
-                if (std::find(pParty->Members.begin(), pParty->Members.end(), pOwningPlayer) != pParty->Members.end())
+                if (pOwningPlayerParty && pOwningPlayerParty == pParty)
                 {
                     TransferOwnership(acMessage.pPlayer, World::ToInteger(*itor));
                     isOwner = true;
