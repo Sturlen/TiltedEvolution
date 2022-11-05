@@ -23,7 +23,7 @@ export interface ChatMessage {
 })
 export class ChatService {
   public messageList = new ReplaySubject<ChatMessage>();
-
+  
   /**
    * Send chat message to the Server. Does not add anything to the local mesesage list.
    */
@@ -94,11 +94,20 @@ export class ChatService {
     },
   };
 
+  private GlobalChat: Command = {
+    name: 'global',
+    executor: async args => {
+      const content = args.join(' ');
+      this.sendMessage(MessageTypes.GLOBAL_CHAT, content);
+    },
+  };
+
   constructor() {
     skyrimtogether.on('message', this.onMessageRecieved.bind(this));
 
     this.CommandHandler = new CommandHandler(this);
     this.CommandHandler.register(this.LocalChat);
     this.CommandHandler.register(this.PartyChat);
+    this.CommandHandler.register(this.GlobalChat);
   }
 }
