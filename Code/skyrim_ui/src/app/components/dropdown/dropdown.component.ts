@@ -17,8 +17,6 @@ import { Sound, SoundService } from 'src/app/services/sound.service';
 import { DestroyService } from '../../services/destroy.service';
 import { DropdownOptionComponent } from './dropdown-option.component';
 
-type OptionValue = string | number;
-
 const noop = () => {};
 
 let dropdownCounter = 1;
@@ -41,6 +39,7 @@ export class DropdownComponent implements AfterViewInit, ControlValueAccessor {
   isOpen = false;
   isDisabled = false;
   selected: number | undefined = undefined;
+  @Input('direction') direction: "up" | undefined;
 
   options = new BehaviorSubject<{ text: string; value: any }[]>([]);
 

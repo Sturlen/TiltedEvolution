@@ -4,6 +4,7 @@
   [class.focus]="isFocused"
   [class.is-open]="isOpen"
   [class.disabled]="isDisabled"
+  [class.up]="direction === 'up'"
 >
   <div class="box" (click)="toggle($event)">
     <ng-container>
