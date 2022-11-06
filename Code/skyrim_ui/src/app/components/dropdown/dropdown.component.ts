@@ -39,7 +39,6 @@ export class DropdownComponent implements AfterViewInit, ControlValueAccessor {
   isOpen = false;
   isDisabled = false;
   selected: number | undefined = undefined;
-  @Input('direction') direction: "up" | undefined;
 
   options = new BehaviorSubject<{ text: string; value: any }[]>([]);
 
@@ -48,6 +47,8 @@ export class DropdownComponent implements AfterViewInit, ControlValueAccessor {
   @Input() placeholder: string;
   // translation is opt-out because it should be the default for all UI elements.
   @Input('noTranslate') noTranslate: boolean | undefined;
+  @Input('direction') direction: 'up' | undefined;
+  @Input('no-label') noLabel: boolean | undefined;
   @Output() optSelect = new EventEmitter();
 
   private onTouchedCallback: () => void = noop;

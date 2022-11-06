@@ -4,12 +4,13 @@
   [class.focus]="isFocused"
   [class.is-open]="isOpen"
   [class.disabled]="isDisabled"
+  [class.no-label]="noLabel"
   [class.up]="direction === 'up'"
 >
   <div class="box" (click)="toggle($event)">
     <ng-container>
       <div class="dropdown-selected">
-        <span>{{
+        <span *ngIf="!noLabel">{{
           noTranslate
             ? selectedLabel
             : (selectedLabel | transloco: { length: options[selected]?.value })
